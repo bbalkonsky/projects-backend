@@ -4,8 +4,9 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 
 app.use(cors());
+app.use(express.json());
 
-let db = new sqlite3.Database('src/database.db', sqlite3.OPEN_READONLY, (err) => {
+let db = new sqlite3.Database('src/database.db', sqlite3, (err) => {
     if (err) {
         console.error(err.message);
     }
@@ -39,13 +40,31 @@ app.get("/all", function(request, response){
     });
 });
 
-// db.run(`INSERT INTO projects VALUES(?)`, ['C'], function(err) {
-//     if (err) {
-//         return console.log(err.message);
-//     }
-//     // get the last insert id
-//     console.log(`A row has been inserted with rowid ${this.lastID}`);
-// });
+app.post('/post', function (req, res) {
+    const body = req.body;
+
+    db.run(
+        `INSERT INTO projects(id, title, description, prod_link, dev_link, git_link, other) VALUES (?,?,?,?,?,?,?)`,
+        [
+            body.id,
+            body.title,
+            body.description,
+            body.prod_link,
+            body.dev_link,
+            body.git_link,
+            body.other
+        ],
+        function(err) {
+            if (err) {
+                return console.log(err.message);
+            }
+            console.log(`A row has been inserted with rowid ${this.lastID}`);
+        });
+
+    res.send('POST request to the homepage');
+});
+
+
 
 const conn = app.listen(4000, '0.0.0.0');
 
