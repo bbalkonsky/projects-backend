@@ -13,6 +13,30 @@ let db = new sqlite3.Database('src/database.db', sqlite3, (err) => {
     console.log('Connected to the database.');
 });
 
+app.put("/project/edit/:id", function(request, response){
+    const sql = `SELECT * FROM projects WHERE id = ?`;
+    const body = request.body;
+
+    db.run(
+        `UPDATE projects SET title = ?, description = ?, prod_link = ?, dev_link = ?, git_link = ? WHERE id = ?`,
+        [
+            body.title,
+            body.description,
+            body.prod_link,
+            body.dev_link,
+            body.git_link,
+            body.id
+        ],
+        function(err) {
+            if (err) {
+                return console.log(err.message);
+            }
+            console.log(`A row with ${this.id} was update`);
+        });
+
+    response.send('PUT request to the homepage');
+});
+
 app.get("/project/:id", function(request, response){
     const sql = `SELECT * FROM projects WHERE id = ?`;
     const id = request.params["id"];
@@ -40,8 +64,8 @@ app.get("/all", function(request, response){
     });
 });
 
-app.post('/post', function (req, res) {
-    const body = req.body;
+app.post('/post', function (request, response) {
+    const body = request.body;
 
     db.run(
         `INSERT INTO projects(id, title, description, prod_link, dev_link, git_link, other) VALUES (?,?,?,?,?,?,?)`,
@@ -61,7 +85,21 @@ app.post('/post', function (req, res) {
             console.log(`A row has been inserted with rowid ${this.lastID}`);
         });
 
-    res.send('POST request to the homepage');
+    response.send('POST request to the homepage');
+});
+
+app.delete("/delete/:id", function(request, response){
+    const sql = `DELETE FROM projects WHERE id = ?`;
+    const id = request.params["id"];
+
+    db.serialize(() => {
+        db.all(sql, id, (err, result) => {
+            if (err) {
+                console.error(err.message);
+            }
+            response.json(result);
+        });
+    });
 });
 
 
