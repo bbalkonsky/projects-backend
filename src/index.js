@@ -18,13 +18,13 @@ app.put("/project/edit/:id", function(request, response){
     const body = request.body;
 
     db.run(
-        `UPDATE projects SET title = ?, description = ?, prod_link = ?, dev_link = ?, git_link = ? WHERE id = ?`,
+        `UPDATE projects SET title = ?, description = ?, prod_url = ?, dev_url = ?, git_url = ? WHERE id = ?`,
         [
             body.title,
             body.description,
-            body.prod_link,
-            body.dev_link,
-            body.git_link,
+            body.prod_url,
+            body.dev_url,
+            body.git_url,
             body.id
         ],
         function(err) {
@@ -68,15 +68,14 @@ app.post('/post', function (request, response) {
     const body = request.body;
 
     db.run(
-        `INSERT INTO projects(id, title, description, prod_link, dev_link, git_link, other) VALUES (?,?,?,?,?,?,?)`,
+        `INSERT INTO projects(id, title, description, prod_url, dev_url, git_url) VALUES (?,?,?,?,?,?)`,
         [
             body.id,
             body.title,
             body.description,
-            body.prod_link,
-            body.dev_link,
-            body.git_link,
-            body.other
+            body.prod_url,
+            body.dev_url,
+            body.git_url
         ],
         function(err) {
             if (err) {
